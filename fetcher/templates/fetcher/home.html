@@ -5,10 +5,25 @@
 </head>
 <body>
     <h1>Search Free Stock Images</h1>
-    <form method="GET" action="{% url 'search_images' %}">
-        <input type="text" name="query" placeholder="Search e.g. jeans">
-        <button type="submit">Search</button>
-    </form>
+    <form method="POST" action="{% url 'download_images' %}">
+    {% csrf_token %}
+
+    {% if images %}
+        <h2>Search Results:</h2>
+        <div style="display:flex; flex-wrap: wrap;">
+            {% for img in images %}
+                <div style="margin: 10px; text-align: center;">
+                    <img src="{{ img }}" width="200"><br>
+                    <input type="checkbox" name="selected_images" value="{{ img }}">
+                </div>
+            {% endfor %}
+        </div>
+        <br>
+        <button type="submit">Download Selected</button>
+    {% else %}
+        <p>No images found. Try a new search.</p>
+    {% endif %}
+</form>
 
     {% if images %}
         <h2>Results:</h2>

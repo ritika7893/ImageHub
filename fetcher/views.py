@@ -1,6 +1,11 @@
 from django.shortcuts import render
 from django.conf import settings
 
+from pathlib import Path
+import os
+import requests
+from django.http import HttpResponse
+from django.shortcuts import redirect
 
 # Create your views here.
 import requests
@@ -30,3 +35,28 @@ def search_images(request):
             images = [photo["src"]["medium"] for photo in data["photos"]]
 
     return render(request, "fetcher/home.html", {"images": images})
+
+
+def download_images(request):
+    if request.method == "POST":
+        image_urls = request.POST.getlist("selected_images")
+
+        # Get system Downloads folder path
+        downloads_path = Path.home() / "Downloads"
+        os.makedirs(downloads_path, exist_ok=True)
+
+        for url in image_urls:
+            try:
+                image_name = url.split("/")[-1].split("?")[0]  # clean file name
+                response = requests.get(url)
+                if response.status_code == 200:
+                    with open(os.path.join(downloads_path, image_name), "wb") as f:
+                        f.write(response.content)
+            except Exception as e:
+                print(f"Error downloading {url}: {e}")
+
+        return HttpResponse(
+            f"{len(image_urls)} image(s) downloaded successfully to your Downloads folder!"
+        )
+
+    return redirect("home")
