@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Fetcher</title>
+</head>
+<body>
+    <h1>Search Free Stock Images</h1>
+    <form method="GET" action="{% url 'search_images' %}">
+        <input type="text" name="query" placeholder="Search e.g. jeans">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if images %}
+        <h2>Results:</h2>
+        <div style="display:flex; flex-wrap: wrap;">
+            {% for img in images %}
+                <div style="margin: 10px;">
+                    <img src="{{ img }}" width="200" height="auto">
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html>
