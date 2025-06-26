@@ -1,39 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Image Fetcher</title>
+  <meta charset="UTF-8">
+  <title>ImageHub | Free Stock Images</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+    .image-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+      transition: transform 0.2s ease-in-out;
+      height: 100%;
+    }
+    .image-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    img {
+      height: 200px;
+      object-fit: cover;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-    <h1>Search Free Stock Images</h1>
+
+<!-- ✅ Header -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid px-4">
+    
+    <!-- Logo -->
+    <a class="navbar-brand" href="{% url 'home' %}">📷 ImageHub</a>
+
+    <!-- Left side: Home -->
+    <ul class="navbar-nav d-flex flex-row">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'home' %}">Home</a>
+      </li>
+    </ul>
+
+    <!-- Toggler for mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarContent" aria-controls="navbarContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Right side: Powered by Pexels -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="https://www.pexels.com/api/" target="_blank">Powered by Pexels</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container py-5">
+    <h1 class="text-center mb-4">🔍 Search Free Stock Images</h1>
+
+    <!-- Search Form -->
+    <form method="get" action="{% url 'search_images' %}" class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" name="query" placeholder="Search for 'jeans', 'nature', 'cars'..." required>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+    {% if images %}
     <form method="POST" action="{% url 'download_images' %}">
-    {% csrf_token %}
-
-    {% if images %}
-        <h2>Search Results:</h2>
-        <div style="display:flex; flex-wrap: wrap;">
+        {% csrf_token %}
+        <div class="row">
             {% for img in images %}
-                <div style="margin: 10px; text-align: center;">
-                    <img src="{{ img }}" width="200"><br>
-                    <input type="checkbox" name="selected_images" value="{{ img }}">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="image-card text-center">
+                   <img src="{{ img }}" class="img-fluid mb-2 rounded" alt="Image" style="height: 40vh; width: 100%; object-fit: cover;">
+                    <div class="checkbox">
+                        <input type="checkbox" name="selected_images" value="{{ img }}">
+                        <label>Select</label>
+                    </div>
                 </div>
+            </div>
             {% endfor %}
         </div>
-        <br>
-        <button type="submit">Download Selected</button>
-    {% else %}
-        <p>No images found. Try a new search.</p>
-    {% endif %}
-</form>
-
-    {% if images %}
-        <h2>Results:</h2>
-        <div style="display:flex; flex-wrap: wrap;">
-            {% for img in images %}
-                <div style="margin: 10px;">
-                    <img src="{{ img }}" width="200" height="auto">
-                </div>
-            {% endfor %}
+        <div class="text-center">
+            <button class="btn btn-success" type="submit">⬇️ Download Selected</button>
         </div>
+    </form>
+    {% elif request.GET.query %}
+        <p class="text-center text-muted mt-4">😕 No images found for "{{ request.GET.query }}".</p>
     {% endif %}
+</div>
+
 </body>
 </html>
